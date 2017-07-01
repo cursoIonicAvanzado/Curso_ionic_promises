@@ -5,7 +5,8 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
+angular.module('starter', ['ionic', 'starter.dashboard',
+    'starter.desorden', 'starter.promises'])
 
     .run(function ($ionicPlatform) {
         $ionicPlatform.ready(function () {
@@ -50,31 +51,22 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
                 }
             })
 
-            .state('tab.chats', {
-                url: '/chats',
+            .state('tab.desorden', {
+                url: '/desorden',
                 views: {
-                    'tab-chats': {
-                        templateUrl: 'templates/tab-chats.html',
-                        controller: 'ChatsCtrl'
-                    }
-                }
-            })
-            .state('tab.chat-detail', {
-                url: '/chats/:chatId',
-                views: {
-                    'tab-chats': {
-                        templateUrl: 'templates/chat-detail.html',
-                        controller: 'ChatDetailCtrl'
+                    'tab-desorden': {
+                        templateUrl: 'templates/tab-desorden.html',
+                        controller: 'DesordenCtrl'
                     }
                 }
             })
 
-            .state('tab.account', {
-                url: '/account',
+            .state('tab.promises', {
+                url: '/promises',
                 views: {
-                    'tab-account': {
-                        templateUrl: 'templates/tab-account.html',
-                        controller: 'AccountCtrl'
+                    'tab-promises': {
+                        templateUrl: 'templates/tab-promises.html',
+                        controller: 'PromisesCtrl'
                     }
                 }
             });
