@@ -1,5 +1,20 @@
 <ion-view view-title="Desorden">
-    <ion-content>
-
+    <ion-content class="padding">
+        <h3>Suma de los números del 1 a n</h3>
+        <label class="item item-input">
+            <input type="number" placeholder="Inserta el valor de N"
+                   ng-model="data.n">
+        </label>
+        <button class="button button-block button-positive" ng-if="data.n"
+                ng-click="calcular()">
+            Calcular
+        </button>
+        <div class="padding">
+            <table>
+                <tr ng-repeat="step in steps">
+                    <td>{{step.value}}</td>
+                </tr>
+            </table>
+        </div>
     </ion-content>
 </ion-view>
