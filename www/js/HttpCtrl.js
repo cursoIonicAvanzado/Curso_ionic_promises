@@ -1,9 +1,28 @@
 angular.module('starter.http', [])
-    .controller('HttpCtrl', function ($scope, $http, $q, utils, $httpParamSerializerJQLike) {
-        var host = 'http://192.168.0.15:8000/';
+    .controller('HttpCtrl', function ($scope, $http, $q, utils,
+                                      $httpParamSerializerJQLike,
+                                      $ionicPlatform) {
+        var host = 'http://192.168.1.101:8000/';
 
         $scope.places = [];
         $scope.placeSelected = {};
+
+        $scope.loginData = {
+            email: 'porfirioads@gmail.com',
+            password: 'holamundo'
+        };
+
+        $scope.newUserData = {
+            nombre: 'Victor',
+            ap_paterno: 'Reveles',
+            ap_materno: 'Espitia',
+            telefono: '4949494949',
+            email: 'victor@gmail.com',
+            password: 'holamundo',
+            edad: '20',
+            estado: 'Zacatecas',
+            municipio: 'Jerez'
+        };
 
         $scope.getAllPlaces = function () {
             utils.showLoading();
@@ -131,6 +150,40 @@ angular.module('starter.http', [])
                 });
         };
 
+        $scope.login = function () {
+            utils.showLoading();
+
+            sendHttpRequest(host + 'login', $scope.loginData, 'POST')
+                .then(function (data) {
+                    if (data.ok) {
+                        utils.popup('Login', 'Login correcto');
+                    } else {
+                        utils.popup('Login', 'Login incorrecto');
+                    }
+                })
+                .catch(function (error) {
+                    utils.popup('ERROR', error);
+                })
+                .finally(function () {
+                    utils.hideLoading();
+                });
+        };
+
+        $scope.insertUsuario = function () {
+            utils.showLoading();
+
+            sendHttpRequest(host + 'usuario', $scope.newUserData, 'POST')
+                .then(function (data) {
+                    utils.popup('Login', 'Registro correcto');
+                })
+                .catch(function (error) {
+                    utils.popup('Login', 'Registro incorrecto');
+                })
+                .finally(function () {
+                    utils.hideLoading();
+                });
+        };
+
         function sendHttpRequest(url, data, method) {
             var defered = $q.defer();
             var promise = defered.promise;
@@ -180,4 +233,5 @@ angular.module('starter.http', [])
                 timeout: 3000
             };
         }
+
     });
