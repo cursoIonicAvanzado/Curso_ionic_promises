@@ -1,5 +1,5 @@
 angular.module('starter.http', [])
-    .controller('HttpCtrl', function ($scope, $http, $q, utils) {
+    .controller('HttpCtrl', function ($scope, $http, $q, utils, $httpParamSerializerJQLike) {
         var host = 'http://192.168.0.15:8000/';
 
         $scope.places = [];
@@ -30,12 +30,98 @@ angular.module('starter.http', [])
                     $scope.places = data;
 
                     if ($scope.places.length > 0) {
-                        $scope.placeSelected = $scope.places[0];
-                        utils.popupUrl('Place details',
-                            'templates/place_detail_popup.html', $scope);
+                        return sendHttpRequest(host + 'places/'
+                            + $scope.places[0].id, {hola: 'hola'}, 'GET');
                     } else {
-                        utils.popup('ERROR', 'No hay places');
+                        var defered = $q.defer();
+                        defered.reject('No hay places');
+                        return defered.promise;
                     }
+                })
+                .then(function (data) {
+                    $scope.placeSelected = data;
+
+                    utils.popupUrl('Place details',
+                        'templates/place_detail_popup.html', $scope);
+                })
+                .catch(function (error) {
+                    utils.popup('ERROR', error);
+                })
+                .finally(function () {
+                    utils.hideLoading();
+                });
+        };
+
+        $scope.insertPlace = function () {
+            utils.showLoading();
+
+            var placeData = {
+                nombre: 'LABSOL',
+                latitud: 22.00002,
+                longitud: 22.00002
+            };
+
+            sendHttpRequest(host + 'places', placeData, 'POST')
+                .then(function (data) {
+                    utils.popup('OK', 'Place insertado correctamente')
+                })
+                .catch(function (error) {
+                    utils.popup('ERROR', error);
+                })
+                .finally(function () {
+                    utils.hideLoading();
+                });
+        };
+
+        $scope.updatePlace = function () {
+            utils.showLoading();
+
+            sendHttpRequest(host + 'places', {}, 'GET')
+                .then(function (data) {
+                    $scope.places = data;
+
+                    var placeData = {
+                        nombre: 'COZCyT'
+                    };
+
+                    if ($scope.places.length > 0) {
+                        return sendHttpRequest(host + 'places/'
+                            + $scope.places[0].id, placeData, 'PUT');
+                    } else {
+                        var defered = $q.defer();
+                        defered.reject('No hay places');
+                        return defered.promise;
+                    }
+                })
+                .then(function (data) {
+                    utils.popup('Place', 'Place actualizado correctamente');
+                })
+                .catch(function (error) {
+                    utils.popup('ERROR', error);
+                })
+                .finally(function () {
+                    utils.hideLoading();
+                });
+        };
+
+        $scope.deletePlace = function () {
+            utils.showLoading();
+
+            sendHttpRequest(host + 'places', {}, 'GET')
+                .then(function (data) {
+                    $scope.places = data;
+
+                    if ($scope.places.length > 0) {
+                        return sendHttpRequest(host + 'places/'
+                            + $scope.places[0].id, {}, 'DELETE');
+                    } else {
+                        var defered = $q.defer();
+                        defered.reject('No hay places');
+                        return defered.promise;
+                    }
+                })
+                .then(function (data) {
+                    utils.popup('Place', 'Place eliminado correctamente');
                 })
                 .catch(function (error) {
                     utils.popup('ERROR', error);
@@ -61,7 +147,7 @@ angular.module('starter.http', [])
                 .then(function successCallback(response) {
                     setTimeout(function () {
                         defered.resolve(response.data);
-                    }, 1000);
+                    }, 0);
                 }, function errorCallback(response) {
                     setTimeout(function () {
                         if (response.status == -1) {
@@ -69,7 +155,7 @@ angular.module('starter.http', [])
                         } else {
                             defered.reject('Error [' + response.status + ']');
                         }
-                    }, 1000);
+                    }, 0);
                 });
 
             return promise;
@@ -80,14 +166,7 @@ angular.module('starter.http', [])
                 method: method,
                 url: url,
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                transformRequest: function (obj) {
-                    var str = [];
-                    for (var p in obj)
-                        str.push(encodeURIComponent(p) + "="
-                            + encodeURIComponent(obj[p]));
-                    return str.join("&");
-                },
-                data: data,
+                data: $httpParamSerializerJQLike(data),
                 timeout: 3000
             };
         }
@@ -97,7 +176,7 @@ angular.module('starter.http', [])
                 method: 'GET',
                 url: url,
                 headers: {'Content-Type': undefined},
-                data: data,
+                params: data,
                 timeout: 3000
             };
         }
